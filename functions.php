@@ -1,18 +1,14 @@
 <?php
 define( 'TEMPPATH', get_bloginfo('stylesheet_directory'));
-define( 'IMAGES', TEMPPATH. "/images"); 
+define( 'IMAGES', TEMPPATH. "/images");
 
-add_theme_support( 'nav-menus' );
+require_once('wurfl/Client/Client.php');
 
-if ( function_exists( 'register_nav_menus' ) ) {
-	register_nav_menus(
-		array(
-		  'main' => 'Main Nav'
-		)
-	);
+if ( function_exists( 'add_theme_support' ) ) { 
+	add_theme_support( 'post-thumbnails' );
+	add_theme_support( 'menus' );
 }
 
-//require_once('cpt_template.php');
 
 
 /*****Sidebars!******/
@@ -29,13 +25,45 @@ register_sidebar( array (
 
 register_sidebar( array (
 	'name' => __( 'Sidebar2', 'secondary-sidebar' ),
-	'id' => 'secondar-widget-area',
-	'description' => __( 'The seconardy widget area', 'wpbp' ),
+	'id' => 'secondary-widget-area',
+	'description' => __( 'The secondary widget area', 'wpbp' ),
 	'before_widget' => '<div class="widget">',
 	'after_widget' => "</div>",
 	'before_title' => '<h3 class="widget-title">',
 	'after_title' => '</h3>',
 ) );
+
+
+
+
+function jlc_is_mobile_device(){
+	try{
+		$config = new WurflCloud_Client_Config(); 
+		$config->api_key = '673289:CNry9beZIoP38Kn2z1WRQcAU6Fqd0TwS';  
+		$client = new WurflCloud_Client_Client($config); 
+		$client->detectDevice(); 
+		
+		return $client->getDeviceCapability('is_wireless_device');
+	}catch (Exception $e){
+		return wp_is_mobile();
+	}
+}
+
+define( 'ISMOBILE', jlc_is_mobile_device());
+
+
+function jlc_scripts() {
+	wp_enqueue_style( 'googlewebfonts', 'http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' );
+	
+    echo '<!--[if lt IE 9]>';
+    echo '	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>';
+    echo '	<script stc="'. TEMPPATH.'/js/respond.min.js"></script>';
+    echo '<![endif]-->';
+	
+}
+
+add_action( 'wp_enqueue_scripts', 'mf_scripts' );
+
 
 
 function jlc_get_attachements($pid){
@@ -62,7 +90,7 @@ function jlc_page_url() {
 }
 
 
-function print_post_nav(){
+function jlc_print_post_nav(){
 ?>
 		<div class="navigation group">
 			<div class="alignleft"><?php next_posts_link('&laquo; Next') ?></div>
@@ -72,7 +100,7 @@ function print_post_nav(){
 
 }
 
-function print_not_found(){
+function jlc_print_not_found(){
 ?>
 		<h3 class="center">No posts found. Try a different search?</h3>
 		<?php get_search_form(); ?>
@@ -80,20 +108,6 @@ function print_not_found(){
 }
 
 
-function jlc_print_array($a){
-	print "<pre>";
-	print_r($a);
-	print "</pre>";
-}
 
-function jlc_twitter_handles($content){
-	$pattern= '/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9_]+)/i';
-	//$pattern= array('|@([a-zA-Z0-9_]*)|');
-	$replace= '@<a href="http://www.twitter.com/$1">$1</a>';
-	$content= preg_replace($pattern, $replace, $content);
-	return $content;
-}
-
-//add_filter( "the_content", "casabona_twitter_handles" );
 
 ?>

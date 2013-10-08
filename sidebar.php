@@ -4,7 +4,7 @@
  * @subpackage Default_Theme
  */
 ?>
-		<aside>
+		<aside class="group">
 		
 			<?php	/* Widgetized Area */
 					if ( !function_exists( 'dynamic_sidebar' ) || !dynamic_sidebar('Sidebar') ) : ?>
